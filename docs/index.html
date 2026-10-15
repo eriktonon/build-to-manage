@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IBM Build to Manage (BTM) v2.0 — Interactive SRE &amp; Observability Control Plane</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --pe-color-primary: #0f62fe;
+      --pe-color-primary-hover: #0043ce;
+      --pe-color-text: #161616;
+      --pe-color-text-secondary: #525252;
+      --pe-color-background: #ffffff;
+      --pe-color-surface: #f4f4f4;
+      --pe-color-border: #c6c6c6;
+      --pe-color-muted: #e0e0e0;
+      --pe-color-inverse: #ffffff;
+      --pe-color-inverse-surface: #161616;
+      --pe-color-success: #24a148;
+      --pe-color-warning: #d97706;
+      --pe-color-danger: #da1e28;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0px !important;
+    }
+
+    body {
+      background-color: var(--pe-color-surface);
+      color: var(--pe-color-text);
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      letter-spacing: 0.16px;
+      text-align: left;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Carbon v11 UI Shell Header */
+    .cds-header {
+      height: 48px;
+      background-color: #161616;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-bottom: 1px solid #393939;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .cds-header-brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .cds-header-divider {
+      width: 1px;
+      height: 24px;
+      background-color: #393939;
+    }
+
+    .cds-header-name {
+      font-size: 14px;
+      color: #f4f4f4;
+      font-weight: 400;
+    }
+
+    .cds-header-name strong {
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .cds-header-links {
+      display: flex;
+      align-items: center;
+      gap: 1px;
+      background-color: #393939;
+    }
+
+    .cds-header-link {
+      background-color: #161616;
+      color: #c6c6c6;
+      text-decoration: none;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      padding: 0 16px;
+      height: 47px;
+      display: inline-flex;
+      align-items: center;
+      transition: background-color 0.15s, color 0.15s;
+    }
+
+    .cds-header-link:hover {
+      background-color: #262626;
+      color: #ffffff;
+    }
+
+    .cds-header-link.primary {
+      background-color: #0f62fe;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .cds-header-link.primary:hover {
+      background-color: #0043ce;
+    }
+
+    /* Main Container */
+    .cds-container {
+      max-width: 1440px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      flex: 1;
+    }
+
+    /* Hero Banner */
+    .cds-hero {
+      background-color: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-left: 4px solid #0f62fe;
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 1px;
+      background-color: #e0e0e0;
+    }
+
+    .cds-hero-content {
+      background-color: #ffffff;
+      padding: 28px 32px;
+    }
+
+    .cds-eyebrow {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      color: #0f62fe;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .cds-hero-title {
+      font-size: 32px;
+      font-weight: 300;
+      color: #161616;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .cds-hero-title strong {
+      font-weight: 600;
+    }
+
+    .cds-hero-desc {
+      font-size: 15px;
+      color: #525252;
+      line-height: 1.5;
+      max-width: 780px;
+      margin-bottom: 20px;
+    }
+
+    .cds-btn-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .cds-btn {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 13px 20px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      transition: background-color 0.15s;
+    }
+
+    .cds-btn-primary {
+      background-color: #0f62fe;
+      color: #ffffff;
+    }
+
+    .cds-btn-primary:hover {
+      background-color: #0043ce;
+    }
+
+    .cds-btn-danger {
+      background-color: #da1e28;
+      color: #ffffff;
+    }
+
+    .cds-btn-danger:hover {
+      background-color: #b81921;
+    }
+
+    .cds-btn-secondary {
+      background-color: #161616;
+      color: #ffffff;
+    }
+
+    .cds-btn-secondary:hover {
+      background-color: #393939;
+    }
+
+    .cds-btn-ghost {
+      background-color: #f4f4f4;
+      color: #161616;
+      border-color: #c6c6c6;
+    }
+
+    .cds-btn-ghost:hover {
+      background-color: #e0e0e0;
+    }
+
+    /* Right KPI Tile Grid inside Hero */
+    .cds-hero-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background-color: #e0e0e0;
+    }
+
+    .cds-metric-tile {
+      background-color: #f4f4f4;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .cds-metric-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: #525252;
+      text-transform: uppercase;
+    }
+
+    .cds-metric-value {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 28px;
+      font-weight: 600;
+      color: #161616;
+      margin-top: 8px;
+    }
+
+    .cds-metric-value.blue { color: #0f62fe; }
+    .cds-metric-value.green { color: #24a148; }
+    .cds-metric-value.red { color: #da1e28; }
+
+    .cds-metric-sub {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: #525252;
+      margin-top: 4px;
+    }
+
+    /* Simulator 2-Column Carbon Grid */
+    .cds-sim-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1px;
+      background-color: #e0e0e0;
+      border: 1px solid #e0e0e0;
+    }
+
+    .cds-panel {
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .cds-panel-header {
+      background-color: #161616;
+      color: #ffffff;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cds-panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .cds-badge {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+    }
+
+    .cds-badge.pass {
+      background-color: #24a148;
+      color: #ffffff;
+    }
+
+    .cds-badge.warn {
+      background-color: #d97706;
+      color: #ffffff;
+    }
+
+    .cds-badge.fail {
+      background-color: #da1e28;
+      color: #ffffff;
+    }
+
+    .cds-badge.blue {
+      background-color: #0f62fe;
+      color: #ffffff;
+    }
+
+    .cds-panel-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
+    }
+
+    /* Topology & Trace Hop Visualizer */
+    .hop-chain {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background-color: #c6c6c6;
+      border: 1px solid #c6c6c6;
+    }
+
+    .hop-box {
+      background-color: #f4f4f4;
+      padding: 14px;
+      border-top: 3px solid #24a148;
+    }
+
+    .hop-box.error {
+      border-top-color: #da1e28;
+      background-color: #fff1f1;
+    }
+
+    .hop-name {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      font-weight: 600;
+      color: #161616;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .hop-meta {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: #525252;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    /* Terminal Console Output */
+    .cds-terminal {
+      background-color: #161616;
+      color: #f4f4f4;
+      padding: 16px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11.5px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border-left: 3px solid #0f62fe;
+      min-height: 220px;
+    }
+
+    .cds-terminal.error {
+      border-left-color: #da1e28;
+    }
+
+    /* 11 Practices Carbon Data Table */
+    .cds-table-section {
+      background-color: #ffffff;
+      border: 1px solid #e0e0e0;
+    }
+
+    .cds-table-toolbar {
+      padding: 16px 20px;
+      background-color: #f4f4f4;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cds-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .cds-table th {
+      background-color: #161616;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 12px 16px;
+      border-right: 1px solid #393939;
+    }
+
+    .cds-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #e0e0e0;
+      border-right: 1px solid #e0e0e0;
+      font-size: 13.5px;
+      vertical-align: top;
+    }
+
+    .cds-table tr:nth-child(even) td {
+      background-color: #f4f4f4;
+    }
+
+    .mono {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+    }
+
+    .cds-footer {
+      background-color: #161616;
+      color: #c6c6c6;
+      padding: 20px 24px;
+      border-top: 1px solid #393939;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+
+    .cds-footer a {
+      color: #78a9ff;
+      text-decoration: none;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    @media (max-width: 1024px) {
+      .cds-hero, .cds-sim-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Carbon v11 Header -->
+  <header class="cds-header">
+    <div class="cds-header-brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="52" height="22" viewBox="160 200 145 62" fill="none" aria-label="IBM 8-bar logo">
+        <path fill="#0F62FE" d="M164.6 255.3h26.2v3.4h-26.2zm0-7.1h26.2v3.4h-26.2zm7.5-7.2h11.2v3.4h-11.2zm0-7.1h11.2v3.4h-11.2zm0-7.2h11.2v3.4h-11.2zm0-7.1h11.2v3.4h-11.2zm-7.5-7.2h26.2v3.4h-26.2zm0-7.1h26.2v3.4h-26.2z"/>
+        <path fill="#0F62FE" d="M194.6 255.3v3.4h27.6c3.5 0 6.8-1.3 9.3-3.4h-36.9z"/>
+        <path fill="#0F62FE" d="M194.6 248.2v3.4h40c.6-1.1 1.1-2.2 1.4-3.4h-41.4z"/>
+        <path fill="#0F62FE" d="M202 241h11.2v3.4H202zm29.8-7.1H202v3.4h32.5c-.7-1.3-1.6-2.5-2.7-3.4zm-29.8-7.2v3.4h29.7c1.1-1 2-2.1 2.8-3.4H202z"/>
+        <path fill="#0F62FE" d="M235.9 215.8c-.3-1.2-.8-2.3-1.4-3.4h-39.9v3.4h41.3z"/>
+        <path fill="#0F62FE" d="M231.4 208.7c-2.5-2.1-5.7-3.4-9.3-3.4h-27.6v3.4h36.9z"/>
+        <path fill="#0F62FE" d="M202 219.6h11.2v3.4H202zm22.5 3.4H236c.3-1.1.4-2.2.4-3.4h-11.9v3.4zm0 18v3.4h11.9c0-1.2-.1-2.3-.4-3.4h-11.5z"/>
+        <path fill="#0F62FE" d="M239.5 255.3h18.7v3.4h-18.7z"/>
+        <path fill="#0F62FE" d="M239.5 248.2h18.7v3.4h-18.7z"/>
+        <path fill="#0F62FE" d="M247 241h11.2v3.4H247z"/>
+        <path fill="#0F62FE" d="M247 233.9h11.2v3.4H247z"/>
+        <path fill="#0F62FE" d="M247 226.7h11.2v3.4H247z"/>
+        <path fill="#0F62FE" d="M280.7 255.3h18.7v3.4h-18.7zm0-7.1h18.7v3.4h-18.7zm0-7.2h11.2v3.4h-11.2zm0-7.1h11.2v3.4h-11.2zm0-3.8h11.2v-3.4h-21.1l-1.1 3.4h9.8l1.2-3.2zm11.2-10.5h-18.6l-1.1 3.4h19.7zm-13.6-14.3l-1.2 3.4h22.3v-3.4zm-8.9 53.4l1.2-3.4h-2.4zm-2.5-7.1h5.1l1.1-3.4h-7.4zm-2.5-7.2h10.1l1.2-3.4h-12.5zm-2.5-7.1H277l1.2-3.4h-17.5zm6.1-10.6h-9.8v.2l1.2 3.2h9.8z"/>
+        <path fill="#0F62FE" d="M247 223h19.7l-1.1-3.4H247z"/>
+        <path fill="#0F62FE" d="M274.6 215.8h24.8v-3.4h-23.6z"/>
+        <path fill="#0F62FE" d="M263.1 212.4h-23.6v3.4h24.8z"/>
+        <path fill="#0F62FE" d="M260.6 205.3h-21.1v3.4h22.3z"/>
+      </svg>
+      <div class="cds-header-divider"></div>
+      <div class="cds-header-name">
+        CSMO &amp; Platform Engineering &nbsp;/&nbsp; <strong>Build to Manage (BTM) Reference v2.0</strong>
+      </div>
+    </div>
+    <nav class="cds-header-links">
+      <a class="cds-header-link" href="https://github.com/eriktonon/build-to-manage" target="_blank" rel="noopener">GitHub Repo</a>
+      <a class="cds-header-link" href="https://tokenomics.eriktonon.com" target="_blank" rel="noopener">AI Tokenomics</a>
+      <a class="cds-header-link primary" href="https://score.eriktonon.com" target="_blank" rel="noopener">Run Maturity Assessment →</a>
+    </nav>
+  </header>
+
+  <main class="cds-container">
+
+    <!-- Hero & Interactive Trigger Bar -->
+    <section class="cds-hero">
+      <div class="cds-hero-content">
+        <div class="cds-eyebrow">IBM CLOUD ARCHITECTURE · SHIFT-LEFT OPERABILITY</div>
+        <h1 class="cds-hero-title"><strong>Build to Manage</strong> Interactive SRE Control Plane</h1>
+        <p class="cds-hero-desc">
+          Applications in mission-critical environments cannot treat resilience as an afterthought. Simulate how the <strong>11 IBM Build to Manage Practices</strong> operate in real time across <code>service1 → service2 → service3</code> with W3C TraceContext, L5 Synthetic HealthChecks, First Failure Data Capture (FFDC), and Executable Runbooks.
+        </p>
+        <div class="cds-btn-bar">
+          <button class="cds-btn cds-btn-primary" onclick="simulateHealthyTrace()">
+            ▶ Run Healthy W3C Trace (L5 Pass)
+          </button>
+          <button class="cds-btn cds-btn-danger" onclick="simulateAnomalyFFDC()">
+            ⚡ Inject Downstream Lock Failure (Trigger FFDC)
+          </button>
+          <button class="cds-btn cds-btn-secondary" id="btn-remediate" onclick="executeRunbookRemediation()" style="display:none;">
+            🛠 Execute Runbook BTM-TRC-5001 (Auto-Remediate)
+          </button>
+        </div>
+      </div>
+
+      <div class="cds-hero-metrics">
+        <div class="cds-metric-tile">
+          <span class="cds-metric-label">BTM READINESS GATE</span>
+          <span class="cds-metric-value blue" id="kpi-gate">11 / 11</span>
+          <span class="cds-metric-sub">ALL PRACTICES VERIFIED</span>
+        </div>
+        <div class="cds-metric-tile">
+          <span class="cds-metric-label">HEALTHCHECK MATURITY</span>
+          <span class="cds-metric-value green" id="kpi-health">L5 UP</span>
+          <span class="cds-metric-sub" id="kpi-health-sub">SYNTHETIC PROBE: 4.2ms</span>
+        </div>
+        <div class="cds-metric-tile">
+          <span class="cds-metric-label">FFDC SNAPSHOTS</span>
+          <span class="cds-metric-value" id="kpi-ffdc">0</span>
+          <span class="cds-metric-sub" id="kpi-ffdc-sub">ZERO UNCAPTURED DEVIATIONS</span>
+        </div>
+        <div class="cds-metric-tile">
+          <span class="cds-metric-label">RELEASE CORRELATION</span>
+          <span class="cds-metric-value">v2.0.0</span>
+          <span class="cds-metric-sub">SHA: b2m-carbon-v11</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Live Simulator Panels -->
+    <section class="cds-sim-grid">
+
+      <!-- Left Panel: Distributed Trace + Structured JSON Log Catalog -->
+      <div class="cds-panel">
+        <div class="cds-panel-header">
+          <span class="cds-panel-title">W3C TraceContext &amp; Structured JSON Log Stream (Practices #02, #04, #05, #06)</span>
+          <span class="cds-badge pass" id="trace-badge">HTTP 200 · TRACE SETTLED</span>
+        </div>
+        <div class="cds-panel-body">
+          <div class="hop-chain">
+            <div class="hop-box" id="hop-1">
+              <div class="hop-name"><span>service1 (Ingress)</span><span id="hop-1-status">200 OK</span></div>
+              <div class="hop-meta" id="hop-1-meta">Event: BTM-TRC-1001<br/>Latency: 11.4 ms</div>
+            </div>
+            <div class="hop-box" id="hop-2">
+              <div class="hop-name"><span>service2 (Orchestrator)</span><span id="hop-2-status">200 OK</span></div>
+              <div class="hop-meta" id="hop-2-meta">Event: BTM-TRC-2001<br/>Latency: 6.1 ms</div>
+            </div>
+            <div class="hop-box" id="hop-3">
+              <div class="hop-name"><span>service3 (Core Ledger)</span><span id="hop-3-status">200 OK</span></div>
+              <div class="hop-meta" id="hop-3-meta">Event: BTM-TRC-3001<br/>Latency: 2.3 ms</div>
+            </div>
+          </div>
+
+          <pre class="cds-terminal" id="log-terminal"></pre>
+        </div>
+      </div>
+
+      <!-- Right Panel: HealthCheck L5 + FFDC Snapshot + Runbook as Code -->
+      <div class="cds-panel">
+        <div class="cds-panel-header">
+          <span class="cds-panel-title">L5 HealthCheck API, FFDC Snapshot &amp; Runbook (Practices #01, #09, #10)</span>
+          <span class="cds-badge blue" id="ffdc-badge">NO ACTIVE INCIDENT</span>
+        </div>
+        <div class="cds-panel-body">
+          <pre class="cds-terminal" id="ffdc-terminal"></pre>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Complete 11 IBM Build to Manage Practices Matrix -->
+    <section class="cds-table-section">
+      <div class="cds-table-toolbar">
+        <div>
+          <strong style="font-size: 16px;">Canonical 11 IBM Build to Manage Practices — Repository Implementation Matrix</strong>
+          <p style="font-size: 13px; color: #525252; margin-top: 2px;">Every practice from the IBM Cloud Architecture PoV mapped to deterministic endpoints and source files.</p>
+        </div>
+        <span class="cds-badge blue">CARBON v11 · COMPLIANT</span>
+      </div>
+      <table class="cds-table">
+        <thead>
+          <tr>
+            <th style="width: 70px;">#</th>
+            <th style="width: 240px;">BTM Practice</th>
+            <th style="width: 240px;">Standard Endpoint / Artifact</th>
+            <th>Operational Shift-Left Capability</th>
+            <th style="width: 130px;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">01</td>
+            <td><strong>HealthCheck API (L1–L5)</strong></td>
+            <td class="mono">GET /health/{live,ready,deep}</td>
+            <td>Separates process liveness from dependency readiness and executes L5 synthetic read-after-write probes (`HealthCheckAPIs/python/frameworks/redishealthcheck.py`).</td>
+            <td><span class="cds-badge pass">VERIFIED</span></td>
+          </tr>
+          <tr>
+            <td class="mono">02</td>
+            <td><strong>Log Format &amp; Catalog</strong></td>
+            <td class="mono">catalog/event-and-log-catalog.json</td>
+            <td>Emits single-line structured JSON logs with mandatory `trace_id`, `span_id`, `transaction_id`, `event_code`, and `release` fields.</td>
+            <td><span class="cds-badge pass">VERIFIED</span></td>
+          </tr>
+          <tr>
+            <td class="mono">03</td>
+            <td><strong>Monitoring &amp; Golden Signals</strong></td>
+            <td class="mono">GET /metrics (OTel / Prom)</td>
+            <td>Exposes latency histograms (P95/P99), error rate, saturation, and SLO error budget burn rate.</td>
+            <td><span class="cds-badge pass">VERIFIED</span></td>
+          </tr>
+          <tr>
+            <td class="mono">04</td>
+            <td><strong>Deployment Correlation</strong></td>
+            <td class="mono">release.{version,commit_sha}</td>
+            <td>Stamps every log, trace span, health response, and FFDC snapshot with exact Git SHA and build version to correlate regressions immediately.</td>
+            <td><span class="cds-badge pass">VERIFIED</span></td>
+          </tr>
+          <tr>
+            <td class="mono">05</td>
+            <td><strong>Distributed Tracing</strong></td>
+            <td class="mono">W3C traceparent + X-Global-Tx-Id</td>
+            <td>Propagates W3C TraceContext across `service1 → service2 → service3` (`DistributedTrace/python/`).</td>
+            <td><span class="cds-badge pass">VERIFIED</span></td>
+          </tr>
+          <tr>
+            <td class="mono">06</td>
+            <td><strong>Topology Information</strong></td>
+            <td class="mono">GET /manage/topology</td>
+            <td>Self-declares upstream callers and downstream dependencies so AIOps understands blast radius dynamically.</td>
+            <td><span class="cds-badge pass">VERIFIED</span></td>
+          </tr>
+          <tr>
+            <td class="mono">07</td>
+            <td><strong>Event Format &amp; Catalog</strong></td>
+            <td class="mono">CloudEvents v1.0 (BTM-*)</td>
+            <td>Deterministic catalog of operational and business events with pre-assigned severity and SLO impact.</td>
+            <td><span class="cds-badge pass">VERIFIED</span></td>
+          </tr>
+          <tr>
+            <td class="mono">08</td>
+            <td><strong>Test Cases &amp; Synthetic Scripts</strong></td>
+            <td class="mono">tests/test_btm_contracts.py</td>
+            <td>Automated pre/post-deploy contract and synthetic smoke test suite verifying all manageability endpoints.</td>
+            <td><span class="cds-badge pass">VERIFIED</span></td>
+          </tr>
+          <tr>
+            <td class="mono">09</td>
+            <td><strong>Runbooks as Code</strong></td>
+            <td class="mono">GET /manage/runbooks</td>
+            <td>Links every `event_code` (`BTM-HC-5001`, `BTM-TRC-5001`) to deterministic diagnosis, remediation, and `CAU Group` (`runbooks/RUNBOOK-CATALOG.md`).</td>
+            <td><span class="cds-badge pass">VERIFIED</span></td>
+          </tr>
+          <tr>
+            <td class="mono">10</td>
+            <td><strong>First Failure Data Capture (FFDC)</strong></td>
+            <td class="mono">GET /manage/ffdc</td>
+            <td>Automatically snapshots call context, headers, and stack trace on the very first anomaly—eliminating bug reproduction delays.</td>
+            <td><span class="cds-badge pass">VERIFIED</span></td>
+          </tr>
+          <tr>
+            <td class="mono">11</td>
+            <td><strong>Living Documentation &amp; Gate</strong></td>
+            <td class="mono">README.md &amp; BTM.png</td>
+            <td>Versioned architectural blueprint and operational readiness checklist kept in lockstep with code.</td>
+            <td><span class="cds-badge pass">VERIFIED</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <footer class="cds-footer">
+    <div>
+      <strong>Erik Tonon</strong> — Head of Platform Engineering &amp; GenAI · IBM Build to Manage Reference Architecture (Carbon Design System v11)
+    </div>
+    <div>
+      <a href="https://score.eriktonon.com" target="_blank" rel="noopener">score.eriktonon.com</a> &nbsp;|&nbsp;
+      <a href="https://tokenomics.eriktonon.com" target="_blank" rel="noopener">tokenomics.eriktonon.com</a> &nbsp;|&nbsp;
+      <a href="https://eriktonon.com" target="_blank" rel="noopener">eriktonon.com</a>
+    </div>
+  </footer>
+
+  <script>
+    let ffdcCount = 0;
+
+    function randomHex(len) {
+      const chars = '0123456789abcdef';
+      let out = '';
+      for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * 16)];
+      return out;
+    }
+
+    function simulateHealthyTrace() {
+      const traceId = randomHex(32);
+      const txId = 'tx-' + traceId.slice(0, 12);
+      const now = new Date().toISOString();
+
+      document.getElementById('hop-1').className = 'hop-box';
+      document.getElementById('hop-2').className = 'hop-box';
+      document.getElementById('hop-3').className = 'hop-box';
+      document.getElementById('hop-1-status').textContent = '200 OK';
+      document.getElementById('hop-2-status').textContent = '200 OK';
+      document.getElementById('hop-3-status').textContent = '200 OK';
+      document.getElementById('hop-3-meta').innerHTML = 'Event: BTM-TRC-3001<br/>Latency: 2.1 ms';
+
+      document.getElementById('trace-badge').className = 'cds-badge pass';
+      document.getElementById('trace-badge').textContent = 'HTTP 200 · W3C TRACE SETTLED';
+      document.getElementById('kpi-health').className = 'cds-metric-value green';
+      document.getElementById('kpi-health').textContent = 'L5 UP';
+      document.getElementById('kpi-health-sub').textContent = 'SYNTHETIC PROBE: 3.8ms';
+      document.getElementById('btn-remediate').style.display = 'none';
+
+      const logs = [
+        {
+          timestamp: now,
+          severity: 'INFO',
+          service: 'service1',
+          release: { version: '2.0.0', commit_sha: 'b2m-carbon-v11' },
+          trace_id: traceId,
+          span_id: randomHex(16),
+          transaction_id: txId,
+          event_code: 'BTM-TRC-1001',
+          message: 'Inbound request accepted at service1; propagating W3C traceparent to service2',
+          latency_ms: 11.4
+        },
+        {
+          timestamp: now,
+          severity: 'INFO',
+          service: 'service2',
+          release: { version: '2.0.0', commit_sha: 'b2m-carbon-v11' },
+          trace_id: traceId,
+          span_id: randomHex(16),
+          transaction_id: txId,
+          event_code: 'BTM-TRC-2001',
+          message: 'Forwarding correlated transaction to downstream ledger service3',
+          latency_ms: 6.1
+        },
+        {
+          timestamp: now,
+          severity: 'INFO',
+          service: 'service3',
+          release: { version: '2.0.0', commit_sha: 'b2m-carbon-v11' },
+          trace_id: traceId,
+          span_id: randomHex(16),
+          transaction_id: txId,
+          event_code: 'BTM-TRC-3001',
+          message: 'Core ledger settlement executed deterministically',
+          latency_ms: 2.1
+        }
+      ];
+
+      const logTerm = document.getElementById('log-terminal');
+      logTerm.className = 'cds-terminal';
+      logTerm.textContent = logs.map(l => JSON.stringify(l)).join('\n\n');
+
+      const hcPayload = {
+        endpoint: 'GET /health/deep?synthetic=true',
+        status: 'UP',
+        maturity_level: 'L5_SYNTHETIC_TRANSACTION',
+        release: { version: '2.0.0', commit_sha: 'b2m-carbon-v11' },
+        checks: [
+          {
+            name: 'redis-state-store',
+            level: 'L5_SYNTHETIC',
+            status: 'UP',
+            latency_ms: 1.4,
+            slo_threshold_ms: 150.0
+          },
+          {
+            name: 'service3-core-ledger',
+            level: 'L4_CASCADING',
+            status: 'UP',
+            latency_ms: 2.1
+          }
+        ]
+      };
+
+      document.getElementById('ffdc-badge').className = 'cds-badge pass';
+      document.getElementById('ffdc-badge').textContent = 'L5 SYNTHETIC HEALTH: UP';
+      const ffdcTerm = document.getElementById('ffdc-terminal');
+      ffdcTerm.className = 'cds-terminal';
+      ffdcTerm.textContent = JSON.stringify(hcPayload, null, 2);
+    }
+
+    function simulateAnomalyFFDC() {
+      ffdcCount += 1;
+      const traceId = randomHex(32);
+      const txId = 'tx-' + traceId.slice(0, 12);
+      const ffdcId = 'ffdc-' + randomHex(8);
+      const now = new Date().toISOString();
+
+      document.getElementById('hop-1').className = 'hop-box error';
+      document.getElementById('hop-2').className = 'hop-box error';
+      document.getElementById('hop-3').className = 'hop-box error';
+      document.getElementById('hop-1-status').textContent = '502 FALLBACK';
+      document.getElementById('hop-2-status').textContent = '503 ERROR';
+      document.getElementById('hop-3-status').textContent = '503 LOCK TIMEOUT';
+      document.getElementById('hop-3-meta').innerHTML = 'Event: BTM-LEDGER-5003<br/>Latency: 3001.4 ms (BREACH)';
+
+      document.getElementById('trace-badge').className = 'cds-badge fail';
+      document.getElementById('trace-badge').textContent = 'HTTP 502 · ANOMALY ISOLATED';
+      document.getElementById('kpi-health').className = 'cds-metric-value red';
+      document.getElementById('kpi-health').textContent = 'DEGRADED';
+      document.getElementById('kpi-health-sub').textContent = 'ALERT: BTM-TRC-5001';
+      document.getElementById('kpi-ffdc').textContent = String(ffdcCount);
+      document.getElementById('kpi-ffdc-sub').textContent = 'LATEST: ' + ffdcId;
+      document.getElementById('btn-remediate').style.display = 'inline-flex';
+
+      const errLogs = [
+        {
+          timestamp: now,
+          severity: 'ERROR',
+          service: 'service3',
+          release: { version: '2.0.0', commit_sha: 'b2m-carbon-v11' },
+          trace_id: traceId,
+          transaction_id: txId,
+          event_code: 'BTM-LEDGER-5003',
+          message: 'Simulated ledger lock contention timeout triggered for FFDC verification',
+          latency_ms: 3001.4
+        },
+        {
+          timestamp: now,
+          severity: 'ERROR',
+          service: 'service1',
+          release: { version: '2.0.0', commit_sha: 'b2m-carbon-v11' },
+          trace_id: traceId,
+          transaction_id: txId,
+          event_code: 'BTM-TRC-5001',
+          ffdc_id: ffdcId,
+          message: 'Downstream anomaly detected; FFDC snapshot captured automatically (zero bug reproduction required)',
+          runbook_ref: '/manage/runbooks/BTM-TRC-5001'
+        }
+      ];
+
+      const logTerm = document.getElementById('log-terminal');
+      logTerm.className = 'cds-terminal error';
+      logTerm.textContent = errLogs.map(l => JSON.stringify(l)).join('\n\n');
+
+      const ffdcSnapshot = {
+        ffdc_id: ffdcId,
+        captured_at: now,
+        practice: '#10 First Failure Data Capture + #09 Runbook as Code',
+        service: 'service1',
+        event_code: 'BTM-TRC-5001',
+        root_cause_event: 'BTM-LEDGER-5003 (service3)',
+        trace_id: traceId,
+        transaction_id: txId,
+        automated_runbook: {
+          runbook_id: 'RB-BTM-TRC-5001',
+          cau_escalation_group: 'SRE-PLATFORM-TIER2',
+          immediate_action: 'Open circuit breaker on service2->service3 hop and drain lock pool'
+        }
+      };
+
+      document.getElementById('ffdc-badge').className = 'cds-badge fail';
+      document.getElementById('ffdc-badge').textContent = 'FFDC CAPTURED: ' + ffdcId;
+      const ffdcTerm = document.getElementById('ffdc-terminal');
+      ffdcTerm.className = 'cds-terminal error';
+      ffdcTerm.textContent = JSON.stringify(ffdcSnapshot, null, 2);
+    }
+
+    function executeRunbookRemediation() {
+      simulateHealthyTrace();
+    }
+
+    // Initialize default view
+    simulateHealthyTrace();
+  </script>
+</body>
+</html>

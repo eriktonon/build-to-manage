@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "framework": "IBM Cloud Service Management & Operations (CSMO) — Build to Manage v2.0",
+  "version": "2.0.0",
+  "cloudevents_spec_version": "1.0",
+  "required_log_fields": [
+    "timestamp",
+    "severity",
+    "service",
+    "release.version",
+    "release.commit_sha",
+    "trace_id",
+    "span_id",
+    "transaction_id",
+    "event_code",
+    "message"
+  ],
+  "events": [
+    {
+      "event_code": "BTM-HC-1000",
+      "category": "HealthCheck API",
+      "severity": "INFO",
+      "maturity_level": "L5_SYNTHETIC",
+      "summary": "Deep synthetic dependency health probe succeeded within SLO threshold.",
+      "slo_impact": "NONE",
+      "runbook_ref": null
+    },
+    {
+      "event_code": "BTM-HC-5001",
+      "category": "HealthCheck API",
+      "severity": "CRITICAL",
+      "maturity_level": "L3_DEPENDENCY_PROBE",
+      "summary": "Backing store (Redis/Database) connectivity probe failed during readiness check.",
+      "slo_impact": "READINESS_REMOVAL",
+      "cau_group": "SRE-DATASTORE-OPS",
+      "runbook_ref": "runbooks/RUNBOOK-CATALOG.md#btm-hc-5001"
+    },
+    {
+      "event_code": "BTM-HC-5002",
+      "category": "HealthCheck API",
+      "severity": "WARNING",
+      "maturity_level": "L5_SYNTHETIC",
+      "summary": "Synthetic read-after-write probe exceeded P95 latency threshold (>150ms).",
+      "slo_impact": "ERROR_BUDGET_BURN_SLOW",
+      "cau_group": "SRE-PLATFORM-TIER2",
+      "runbook_ref": "runbooks/RUNBOOK-CATALOG.md#btm-hc-5002"
+    },
+    {
+      "event_code": "BTM-TRC-1001",
+      "category": "Distributed Tracing",
+      "severity": "INFO",
+      "summary": "Ingress request accepted; W3C traceparent and X-Global-Transaction-Id propagated.",
+      "slo_impact": "NONE",
+      "runbook_ref": null
+    },
+    {
+      "event_code": "BTM-TRC-5001",
+      "category": "First Failure Data Capture (FFDC)",
+      "severity": "ERROR",
+      "summary": "Downstream microservice anomaly detected; FFDC diagnostic snapshot persisted automatically.",
+      "slo_impact": "ERROR_BUDGET_BURN_FAST",
+      "cau_group": "SRE-PLATFORM-TIER2",
+      "runbook_ref": "runbooks/RUNBOOK-CATALOG.md#btm-trc-5001"
+    },
+    {
+      "event_code": "BTM-LEDGER-5003",
+      "category": "Core Settlement",
+      "severity": "CRITICAL",
+      "summary": "Downstream ledger lock contention exceeded timeout budget; fallback activated.",
+      "slo_impact": "CIRCUIT_BREAKER_OPEN",
+      "cau_group": "CORE-LEDGER-SQUAD",
+      "runbook_ref": "runbooks/RUNBOOK-CATALOG.md#btm-ledger-5003"
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: btm-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  service3:
+    image: python:3.12-slim
+    container_name: btm-service3
+    working_dir: /app
+    volumes:
+      - ./DistributedTrace/python/service3:/app
+    environment:
+      - PORT=8082
+      - APP_NAME=service3
+      - APP_VERSION=2.0.0
+      - GIT_COMMIT_SHA=b2m-carbon-v11
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && python app.py"
+    ports:
+      - "8082:8082"
+
+  service2:
+    image: python:3.12-slim
+    container_name: btm-service2
+    working_dir: /app
+    volumes:
+      - ./DistributedTrace/python/service2:/app
+    environment:
+      - PORT=8081
+      - APP_NAME=service2
+      - APP_VERSION=2.0.0
+      - GIT_COMMIT_SHA=b2m-carbon-v11
+      - SERVICE3_URL=http://service3:8082/service
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && python app.py"
+    ports:
+      - "8081:8081"
+    depends_on:
+      - service3
+
+  service1:
+    image: python:3.12-slim
+    container_name: btm-service1
+    working_dir: /app
+    volumes:
+      - ./DistributedTrace/python/service1:/app
+    environment:
+      - PORT=8080
+      - APP_NAME=service1
+      - APP_VERSION=2.0.0
+      - GIT_COMMIT_SHA=b2m-carbon-v11
+      - SERVICE2_URL=http://service2:8081/service
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && python app.py"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - service2
+
+  healthcheck-service:
+    image: python:3.12-slim
+    container_name: btm-healthcheck-l5
+    working_dir: /app
+    volumes:
+      - ./HealthCheckAPIs/python/frameworks:/app
+    environment:
+      - PORT=8083
+      - REDIS_URL=redis://redis:6379/0
+      - APP_NAME=btm-synthetic-health-service
+      - APP_VERSION=2.0.0
+      - GIT_COMMIT_SHA=b2m-carbon-v11
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && python redishealthcheck.py"
+    ports:
+      - "8083:8083"
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  btm-carbon-console:
+    image: nginx:alpine
+    container_name: btm-carbon-console
+    volumes:
+      - ./docs:/usr/share/nginx/html:ro
+    ports:
+      - "8090:80"
